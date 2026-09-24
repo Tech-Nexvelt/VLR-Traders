@@ -1,0 +1,199 @@
+/* ============================================================
+   Footer.module.css — VLR Traders
+   ============================================================ */
+
+.footer {
+  background-color: var(--color-grey-900);
+  color: var(--color-grey-300);
+  padding-top: var(--space-16);
+}
+
+/* ── Grid ────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: var(--space-10);
+  padding-bottom: var(--space-12);
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+}
+
+/* ── Brand ───────────────────────────────────────────────── */
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Logo ────────────────────────────────────────────────── */
+.logoWrap {
+  display: flex;
+  align-items: center;
+}
+
+.logoImage {
+  height: 38px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  display: block;
+  /* Brighten slightly so the logo reads well on the dark footer */
+  filter: brightness(1.15) contrast(0.95);
+}
+
+.tagline {
+  font-size: var(--text-sm);
+  color: var(--color-grey-500);
+  line-height: var(--leading-relaxed);
+  max-width: 22ch;
+}
+
+/* ── Social Icons ────────────────────────────────────────── */
+.socials {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.socialIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-grey-700);
+  color: var(--color-grey-400);
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+  text-decoration: none;
+}
+
+.socialIcon:hover {
+  transform: translateY(-2px);
+  border-color: transparent;
+}
+
+.socialWhatsapp:hover {
+  background-color: var(--color-whatsapp);
+  color: white;
+}
+
+.socialInstagram:hover {
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: white;
+}
+
+.socialLinkedIn:hover {
+  background-color: #0077b5;
+  color: white;
+}
+
+/* ── Column ──────────────────────────────────────────────── */
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.colTitle {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-grey-100);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-grey-700);
+}
+
+/* ── Footer Links ────────────────────────────────────────── */
+.linkList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.footerLink {
+  font-size: var(--text-sm);
+  color: var(--color-grey-400);
+  text-decoration: none;
+  transition: color var(--transition-fast), padding-left var(--transition-fast);
+  display: inline-block;
+}
+
+.footerLink:hover {
+  color: var(--color-grey-100);
+  padding-left: var(--space-2);
+}
+
+/* ── Contact List ────────────────────────────────────────── */
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-grey-400);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  line-height: var(--leading-snug);
+}
+
+a.contactItem:hover {
+  color: var(--color-grey-100);
+}
+
+.contactItem svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-accent-400);
+}
+
+.waBtn {
+  margin-top: var(--space-4);
+  align-self: flex-start;
+}
+
+/* ── Bottom Bar ──────────────────────────────────────────── */
+.bottomBar {
+  border-top: 1px solid var(--color-grey-800);
+  padding-block: var(--space-5);
+}
+
+.bottomInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.copyright {
+  font-size: var(--text-sm);
+  color: var(--color-grey-600);
+}
+
+.legal {
+  font-size: var(--text-sm);
+  color: var(--color-grey-600);
+}

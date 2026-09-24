@@ -1,0 +1,135 @@
+[
+  {
+    "id": "mk-001",
+    "slug": "modern-modular-kitchen",
+    "name": "Modern Modular Kitchen",
+    "category": "Modular Kitchens",
+    "material": "HDF",
+    "finish": "Matte",
+    "status": "Active",
+    "images": [
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=85",
+      "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=800&q=85"
+    ],
+    "description": "Sleek design with premium matte finish. Built for modern living.",
+    "longDescription": "Our modern modular kitchens are crafted with precision and designed to suit contemporary homes and commercial spaces. With a wide range of materials, finishes and configurations, we help you create a kitchen that is not only beautiful but also highly functional.",
+    "badge": "Bestseller",
+    "featured": true,
+    "createdAt": "2026-08-01T10:00:00.000Z"
+  },
+  {
+    "id": "wd-001",
+    "slug": "sliding-door-wardrobe",
+    "name": "Sliding Door Wardrobe",
+    "category": "Wardrobes",
+    "material": "HDHMR",
+    "finish": "Glossy",
+    "status": "Active",
+    "images": [
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&q=85",
+      "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=800&q=85"
+    ],
+    "description": "Space saving design with smooth sliding mechanism and ample storage.",
+    "longDescription": "Maximize your room's potential with custom-engineered sliding door wardrobes.",
+    "badge": "Popular",
+    "featured": true,
+    "createdAt": "2026-08-05T12:00:00.000Z"
+  },
+  {
+    "id": "ip-001",
+    "slug": "wpc-wall-panel",
+    "name": "WPC Wall Panel",
+    "category": "Interior Panels",
+    "material": "WPC",
+    "finish": "Woodgrain",
+    "status": "Active",
+    "images": [
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=85"
+    ],
+    "description": "Durable and elegant wood plastic composite panel for wall accenting.",
+    "longDescription": "Waterproof, termite-proof WPC wall panels giving modern wooden visual warmth.",
+    "badge": "New",
+    "featured": true,
+    "createdAt": "2026-08-10T14:30:00.000Z"
+  },
+  {
+    "id": "ip-002",
+    "slug": "acrylic-panel",
+    "name": "Acrylic Panel",
+    "category": "Interior Panels",
+    "material": "Acrylic",
+    "finish": "Glossy",
+    "status": "Active",
+    "images": [
+      "https://images.unsplash.com/photo-1615873968403-89e068629265?w=800&q=85"
+    ],
+    "description": "High gloss finish panel for luxurious wall decor and cabinet fronts.",
+    "longDescription": "Ultra high gloss acrylic panels engineered for high scratch resistance.",
+    "featured": false,
+    "createdAt": "2026-08-12T09:15:00.000Z"
+  },
+  {
+    "id": "ha-001",
+    "slug": "soft-close-hinge",
+    "name": "Soft Close Hinge",
+    "category": "Hardware & Accessories",
+    "material": "Stainless Steel",
+    "finish": "Solid",
+    "status": "Active",
+    "images": [
+      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&q=85"
+    ],
+    "description": "Premium hydraulic soft close hinge with 3D adjustment.",
+    "longDescription": "Heavy duty stainless steel hydraulic soft close hinges tested for over 100,000 cycles.",
+    "featured": false,
+    "createdAt": "2026-08-15T11:00:00.000Z"
+  },
+  {
+    "id": "ha-002",
+    "slug": "drawer-channel",
+    "name": "Drawer Channel",
+    "category": "Hardware & Accessories",
+    "material": "Mild Steel",
+    "finish": "Solid",
+    "status": "Active",
+    "images": [
+      "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=800&q=85"
+    ],
+    "description": "Smooth operation telescopic soft close drawer slides.",
+    "longDescription": "Full extension soft close drawer slides supporting loads up to 45kg.",
+    "featured": false,
+    "createdAt": "2026-08-18T16:20:00.000Z"
+  },
+  {
+    "id": "cs-001",
+    "slug": "quartz-countertop",
+    "name": "Quartz Countertop",
+    "category": "Custom Solutions",
+    "material": "Quartz",
+    "finish": "Glossy",
+    "status": "Inactive",
+    "images": [
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=85"
+    ],
+    "description": "Durable and stylish non-porous engineered quartz kitchen countertop.",
+    "longDescription": "Scratch-resistant, stain-resistant premium quartz countertop engineered for heavy usage.",
+    "featured": false,
+    "createdAt": "2026-08-20T10:00:00.000Z"
+  },
+  {
+    "id": "mk-002",
+    "slug": "acrylic-kitchen-shutter",
+    "name": "Acrylic Kitchen Shutter",
+    "category": "Modular Kitchens",
+    "material": "Acrylic",
+    "finish": "Glossy",
+    "status": "Active",
+    "images": [
+      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&q=85"
+    ],
+    "description": "Modern finish high gloss acrylic cabinet shutters.",
+    "longDescription": "Seamless edge-banded high-gloss acrylic shutters designed for sleek modular kitchens.",
+    "featured": true,
+    "createdAt": "2026-08-22T08:45:00.000Z"
+  }
+]

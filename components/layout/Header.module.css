@@ -1,0 +1,235 @@
+/* ============================================================
+   Header.module.css — VLR Traders
+   ============================================================ */
+
+/* ── Sticky header shell ─────────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  height: var(--header-height);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition:
+    box-shadow var(--transition-base),
+    border-color var(--transition-base);
+  width: 100%;
+}
+
+.header.scrolled {
+  box-shadow: var(--shadow-md);
+  border-bottom-color: var(--color-border);
+}
+
+/* ── Inner flex row ──────────────────────────────────────── */
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  gap: var(--space-4);
+}
+
+/* ── Logo ────────────────────────────────────────────────── */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoImage {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  display: block;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .logoImage {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.logoName {
+  font-size: var(--text-base);
+  font-weight: var(--font-extrabold);
+  color: #000000;
+  letter-spacing: var(--tracking-tight);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .logoName {
+    font-size: var(--text-lg);
+  }
+}
+
+.logoNameBold {
+  color: #000000;
+}
+
+.logo:hover .logoImage {
+  opacity: 0.9;
+}
+
+/* ── Desktop Nav ─────────────────────────────────────────── */
+.desktopNav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.gooeyNavWrap {
+  background: var(--color-primary-700);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-2);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* ── Actions ─────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.ctaBtn {
+  /* Shown on desktop */
+}
+
+/* ── Hamburger ───────────────────────────────────────────── */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.hamburger:hover {
+  background-color: var(--color-surface-2);
+}
+
+/* ── Mobile Overlay ──────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: calc(var(--z-sticky) + 10);
+  animation: fadeIn 200ms ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Mobile Drawer (Step 2: width max 280px / 85%) ──────── */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 85%;
+  max-width: 280px;
+  height: 100dvh;
+  background-color: var(--color-white);
+  box-shadow: var(--shadow-xl);
+  z-index: calc(var(--z-sticky) + 20);
+  transform: translateX(100%);
+  transition: transform var(--transition-slow);
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--header-height) + var(--space-2)) var(--space-4) var(--space-6);
+  overflow-y: auto;
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+/* Step 8: Reduced nav list gap */
+.drawerList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.drawerLink {
+  display: block;
+  padding: 0.625rem 0.75rem;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  border-left: 3px solid transparent;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    padding-left var(--transition-fast);
+  text-decoration: none;
+}
+
+.drawerLink:hover {
+  color: var(--color-primary);
+  background-color: var(--color-primary-50);
+  border-left-color: var(--color-accent);
+  padding-left: var(--space-4);
+}
+
+.drawerLinkActive {
+  color: var(--color-primary);
+  font-weight: var(--font-semibold);
+  background-color: var(--color-primary-50);
+  border-left-color: var(--color-primary);
+  padding-left: var(--space-4);
+}
+
+.drawerFooter {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.drawerFooter .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .desktopNav {
+    display: none;
+  }
+
+  .ctaBtn {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}

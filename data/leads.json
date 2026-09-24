@@ -1,0 +1,42 @@
+[
+  {
+    "id": "lead_1789203336762_z6rux",
+    "name": "Arun Kumar",
+    "phone": "9876543210",
+    "message": "Looking for modular kitchen & wardrobe quote",
+    "product": "Modern Modular Kitchen",
+    "source": "product",
+    "timestamp": "2026-09-12T08:55:36.762Z",
+    "status": "New"
+  },
+  {
+    "id": "lead_1789200001_demo1",
+    "name": "Rajesh Kumar",
+    "phone": "+91 98765 43210",
+    "message": "Looking for modular kitchen cabinets for a 3BHK villa in Jubilee Hills.",
+    "product": "Modern Modular Kitchen",
+    "source": "product",
+    "timestamp": "2026-09-12T07:15:00.000Z",
+    "status": "New"
+  },
+  {
+    "id": "lead_1789200002_demo2",
+    "name": "Priya Sharma",
+    "phone": "+91 91234 56789",
+    "message": "Need pricing details for 6mm PVC wall panels for commercial office space.",
+    "product": "Interior Wall Panel",
+    "source": "catalog",
+    "timestamp": "2026-09-12T06:30:00.000Z",
+    "status": "Contacted"
+  },
+  {
+    "id": "lead_1789200003_demo3",
+    "name": "Anil Verma",
+    "phone": "+91 99887 76655",
+    "message": "Would like a site visit and sample catalogue for luxury sliding wardrobes.",
+    "product": "Luxury Sliding Wardrobe",
+    "source": "form",
+    "timestamp": "2026-09-11T16:45:00.000Z",
+    "status": "In Progress"
+  }
+]

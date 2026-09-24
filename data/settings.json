@@ -1,0 +1,13 @@
+{
+  "whatsappNumber": "+919618560405",
+  "whatsappDisplay": "+91 96185 60405",
+  "secondaryWhatsapp": "+919912821118",
+  "notificationEmail": "info@vlrtraders.com",
+  "defaultMessageTemplate": "Hi, I am interested in your services from VLR Traders website.",
+  "productMessageTemplate": "Hi, I am interested in [Product Name] from VLR Traders website.",
+  "autoRedirectToWhatsApp": true,
+  "autoRedirectDelaySeconds": 1,
+  "requirePhone": true,
+  "saveLeadsToDatabase": true,
+  "successMessageText": "Your enquiry has been received. Our team will contact you shortly."
+}

@@ -1,0 +1,76 @@
+/* ============================================================
+   MobileStickyBar.module.css — VLR Traders
+   Only visible on mobile (< 768px).
+   ============================================================ */
+
+/* ── Outer bar (Step 6: fixed bottom-0 left-0 right-0 flex text-sm) ── */
+.bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-fab);
+  height: var(--mobile-bar-height);
+  display: flex;
+  align-items: stretch;
+  background-color: var(--color-white);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  display: none;
+}
+
+/* ── Shared button styles (Step 6: flex-1 py-3 text-sm) ── */
+.callBtn,
+.waBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.75rem 0.5rem; /* py-3 */
+  font-size: var(--text-sm); /* text-sm (14px) */
+  font-weight: var(--font-semibold);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.callBtn:active,
+.waBtn:active {
+  opacity: 0.85;
+}
+
+/* ── Call Now — outlined blue ────────────────────────────── */
+.callBtn {
+  color: var(--color-primary);
+  background-color: var(--color-white);
+}
+
+.callBtn:hover {
+  background-color: var(--color-primary-50);
+}
+
+/* ── WhatsApp — solid green ──────────────────────────────── */
+.waBtn {
+  color: var(--color-white);
+  background-color: var(--color-whatsapp);
+}
+
+.waBtn:hover {
+  background-color: var(--color-whatsapp-dark);
+}
+
+/* ── Divider ─────────────────────────────────────────────── */
+.divider {
+  width: 1px;
+  background-color: var(--color-border);
+  flex-shrink: 0;
+}
+
+/* ── Show only on mobile (< 768px) ───────────────────────── */
+@media (max-width: 767px) {
+  .bar {
+    display: flex;
+  }
+}

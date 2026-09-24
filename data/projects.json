@@ -1,0 +1,79 @@
+[
+  {
+    "id": "proj-001",
+    "slug": "luxury-villa-modular-kitchen-jubilee-hills",
+    "name": "Luxury Villa Modular Kitchen",
+    "title": "Luxury Villa Modular Kitchen",
+    "category": "Modular Kitchens",
+    "location": "Jubilee Hills, Hyderabad",
+    "client": "Private Villa",
+    "area": "450 sq.ft",
+    "completionDate": "July 2026",
+    "description": "Custom acrylic glossy modular kitchen with island counter, soft-close hydraulic hardware, and built-in pantry storage.",
+    "images": [
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1000&q=85",
+      "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=1000&q=85",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=85"
+    ],
+    "featured": true,
+    "status": "Completed",
+    "createdAt": "2026-07-15T10:00:00.000Z"
+  },
+  {
+    "id": "proj-002",
+    "slug": "modern-3bhk-walk-in-wardrobe-gachibowli",
+    "name": "Modern Walk-In Wardrobe Suite",
+    "title": "Modern Walk-In Wardrobe Suite",
+    "category": "Wardrobes",
+    "location": "Gachibowli, Hyderabad",
+    "client": "Gated Community Apartment",
+    "area": "320 sq.ft",
+    "completionDate": "August 2026",
+    "description": "Floor-to-ceiling HDHMR sliding wardrobes with tinted glass doors, sensor LED strip lights, and integrated accessory drawers.",
+    "images": [
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1000&q=85",
+      "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=1000&q=85"
+    ],
+    "featured": true,
+    "status": "Completed",
+    "createdAt": "2026-08-02T14:20:00.000Z"
+  },
+  {
+    "id": "proj-003",
+    "slug": "wpc-fluted-wall-paneling-hitech-city",
+    "name": "Corporate Lounge WPC Wall Accent",
+    "title": "Corporate Lounge WPC Wall Accent",
+    "category": "Interior Panels",
+    "location": "HITEC City, Hyderabad",
+    "client": "Tech Office Suite",
+    "area": "1,200 sq.ft",
+    "completionDate": "August 2026",
+    "description": "Acoustic fluted WPC timber panels combined with ambient cove lighting for an executive reception lounge.",
+    "images": [
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1000&q=85",
+      "https://images.unsplash.com/photo-1615873968403-89e068629265?w=1000&q=85"
+    ],
+    "featured": true,
+    "status": "Completed",
+    "createdAt": "2026-08-18T11:00:00.000Z"
+  },
+  {
+    "id": "proj-004",
+    "slug": "full-interior-fitout-banjara-hills",
+    "name": "Penthouse Full Interior Fitout",
+    "title": "Penthouse Full Interior Fitout",
+    "category": "Full Interior",
+    "location": "Banjara Hills, Hyderabad",
+    "client": "Penthouse Owner",
+    "area": "3,600 sq.ft",
+    "completionDate": "September 2026",
+    "description": "Turnkey interior execution including modular kitchen, master bedroom wardrobes, quartz kitchen island, and custom wall paneling.",
+    "images": [
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1000&q=85",
+      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1000&q=85"
+    ],
+    "featured": true,
+    "status": "Completed",
+    "createdAt": "2026-09-01T09:30:00.000Z"
+  }
+]

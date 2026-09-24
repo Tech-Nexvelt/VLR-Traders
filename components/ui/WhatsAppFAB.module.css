@@ -1,0 +1,113 @@
+/* ============================================================
+   WhatsAppFAB.module.css — VLR Traders
+   ============================================================ */
+
+/* ── FAB button (Step 5: fixed bottom-4 right-4, w-12 h-12 / sm:w-14 sm:h-14) ── */
+.fab {
+  position: fixed;
+  bottom: calc(1rem + var(--mobile-bar-height));
+  right: 1rem;
+  z-index: var(--z-fab);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-whatsapp);
+  color: white;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.45);
+  text-decoration: none;
+
+  transition:
+    transform var(--transition-spring),
+    box-shadow var(--transition-base);
+}
+
+@media (min-width: 640px) {
+  .fab {
+    width: 56px;
+    height: 56px;
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+}
+
+.fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.55);
+}
+
+.fab:hover .label {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* ── Icon ────────────────────────────────────────────────── */
+.icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* ── Tooltip label ───────────────────────────────────────── */
+.label {
+  position: absolute;
+  right: calc(100% + var(--space-3));
+  white-space: nowrap;
+  background-color: var(--color-grey-900);
+  color: var(--color-white);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateX(var(--space-2));
+  pointer-events: none;
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base);
+}
+
+.label::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-left-color: var(--color-grey-900);
+}
+
+/* ── Ping ring animation ─────────────────────────────────── */
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--color-whatsapp);
+  opacity: 0.4;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+  0%   { transform: scale(1);   opacity: 0.4; }
+  80%  { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ── On desktop — adjust bottom (no mobile bar) ──────────── */
+@media (min-width: 768px) {
+  .fab {
+    bottom: var(--space-8);
+  }
+}

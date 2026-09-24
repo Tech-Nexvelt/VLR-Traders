@@ -1,0 +1,411 @@
+/* ============================================================
+   lead-form.module.css — VLR Traders Lead Capture Form Styles
+   Matches the UI Mockup: Contact Form, Product Modal & Success State
+   ============================================================ */
+
+.formContainer {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  border: 1px solid var(--color-gray-200, #e2e8f0);
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.08);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .formContainer {
+    padding: 2.25rem;
+  }
+}
+
+.formHeader {
+  margin-bottom: 1.5rem;
+}
+
+.tagline {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-teal-700, #0f766e);
+  margin-bottom: 0.25rem;
+}
+
+.formTitle {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--color-navy-900, #0f172a);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.formSubTitle {
+  font-size: 0.875rem;
+  color: var(--color-gray-600, #4b5563);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* PRODUCT HEADER CARD (MODAL CONTEXT) */
+.productContextCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  background: var(--color-gray-50, #f8fafc);
+  border: 1px solid var(--color-gray-200, #e2e8f0);
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.productThumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--color-gray-200, #e2e8f0);
+}
+
+.productContextMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.enquiringLabel {
+  font-size: 0.75rem;
+  color: var(--color-gray-500, #6b7280);
+  margin-bottom: 0.15rem;
+}
+
+.productContextName {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-navy-900, #0f172a);
+}
+
+.productContextSub {
+  font-size: 0.75rem;
+  color: var(--color-teal-700, #0f766e);
+  font-weight: 600;
+}
+
+/* FORM FIELDS & LABELS */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-navy-900, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.requiredStar {
+  color: #ef4444;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fieldIcon {
+  position: absolute;
+  left: 1rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.65rem;
+  border-radius: 0.625rem;
+  border: 1.5px solid var(--color-gray-300, #cbd5e1);
+  background: #ffffff;
+  font-size: 0.9375rem;
+  color: var(--color-navy-900, #0f172a);
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.inputNoIcon {
+  padding-left: 1rem !important;
+}
+
+.input:focus {
+  border-color: var(--color-teal-600, #0d9488);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* ERROR STATES (MOCKUP #4) */
+.inputError {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+
+.inputError:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #dc2626;
+  margin-top: 0.2rem;
+}
+
+.alertError {
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  color: #991b1b;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* BUTTONS */
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.625rem;
+  border: none;
+  background: var(--color-navy-900, #0f172a);
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-navy-800, #1e293b);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25);
+}
+
+.submitBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.whatsappSubmitBtn {
+  background: #25d366 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35) !important;
+}
+
+.whatsappSubmitBtn:hover:not(:disabled) {
+  background: #20ba5a !important;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45) !important;
+}
+
+.dividerRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-gray-400, #94a3b8);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin: 0.25rem 0;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--color-gray-200, #e2e8f0);
+}
+
+.secondaryWaBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.625rem;
+  border: 1.5px solid #25d366;
+  background: #ffffff;
+  color: #15803d;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.secondaryWaBtn:hover {
+  background: #f0fdf4;
+}
+
+.waSubNote {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-gray-500, #6b7280);
+  margin-top: -0.25rem;
+}
+
+.privacyBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--color-gray-500, #6b7280);
+  margin-top: 0.75rem;
+}
+
+/* ── SUCCESS STATE (MOCKUP #3) ─────────────────────────────── */
+.successContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.successCheckCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.successTitle {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--color-navy-900, #0f172a);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.successDesc {
+  font-size: 0.9375rem;
+  color: var(--color-gray-600, #4b5563);
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+  max-width: 420px;
+}
+
+.whatsappRedirectBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 380px;
+  padding: 0.9375rem 1.5rem;
+  border-radius: 0.625rem;
+  background: #25d366;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+  transition: all 0.2s ease;
+  margin-bottom: 2rem;
+}
+
+.whatsappRedirectBtn:hover {
+  background: #20ba5a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+}
+
+/* NEXT STEPS CARD */
+.nextStepsCard {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid var(--color-gray-200, #e2e8f0);
+  border-radius: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  text-align: left;
+}
+
+.nextStepsTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-navy-900, #0f172a);
+  margin: 0 0 1rem 0;
+}
+
+.stepList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.stepItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.stepNum {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-navy-900, #0f172a);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepText {
+  font-size: 0.875rem;
+  color: var(--color-gray-700, #374151);
+  line-height: 1.4;
+  margin: 0;
+}
