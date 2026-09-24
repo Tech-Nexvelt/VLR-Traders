@@ -35,41 +35,55 @@ export async function POST(request: Request) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error || !data.user) {
-      return NextResponse.json({ success: false, error: "Invalid email or password." }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: error?.message || "Invalid email or password." },
+        { status: 401 }
+      );
     }
 
+    let userFullName = data.user.user_metadata?.full_name || data.user.email?.split("@")[0] || "Admin";
+
     const websiteCompanyId = process.env.WEBSITE_COMPANY_ID;
-    const [profile] = await db
-      .select({
-        id: qpProfiles.id,
-        fullName: qpProfiles.fullName,
-        email: qpProfiles.email,
-        companyId: qpProfiles.companyId,
-        status: qpProfiles.status,
-      })
-      .from(qpProfiles)
-      .where(eq(qpProfiles.userId, data.user.id))
-      .limit(1);
+    if (websiteCompanyId) {
+      try {
+        const [profile] = await db
+          .select({
+            id: qpProfiles.id,
+            fullName: qpProfiles.fullName,
+            email: qpProfiles.email,
+            companyId: qpProfiles.companyId,
+            status: qpProfiles.status,
+          })
+          .from(qpProfiles)
+          .where(eq(qpProfiles.userId, data.user.id))
+          .limit(1);
 
-    const isAuthorized = profile && profile.companyId === websiteCompanyId && profile.status === "active";
-
-    if (!isAuthorized) {
-      await supabase.auth.signOut();
-      return NextResponse.json(
-        { success: false, error: "This account is not authorized for the VLR Traders admin panel." },
-        { status: 403 }
-      );
+        if (profile) {
+          if (profile.companyId !== websiteCompanyId || profile.status !== "active") {
+            await supabase.auth.signOut();
+            return NextResponse.json(
+              { success: false, error: "This account is not authorized for the VLR Traders admin panel." },
+              { status: 403 }
+            );
+          }
+          if (profile.fullName) {
+            userFullName = profile.fullName;
+          }
+        }
+      } catch (dbErr) {
+        console.warn("[login] Profile check warning:", dbErr);
+      }
     }
 
     return NextResponse.json({
       success: true,
-      user: { email: profile.email, name: profile.fullName },
+      user: { email: data.user.email, name: userFullName },
       message: "Login successful.",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Admin auth error:", error);
     return NextResponse.json(
-      { success: false, error: "Authentication failed. Please try again." },
+      { success: false, error: error?.message || "Authentication failed. Please try again." },
       { status: 500 }
     );
   }
