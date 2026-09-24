@@ -3,6 +3,8 @@ import { getAllProjects } from "@/lib/projects-store";
 import { siteConfig } from "@/config/site";
 import ProjectsClient from "./ProjectsClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: `Our Projects & Completed Installations — ${siteConfig.name}`,
   description:

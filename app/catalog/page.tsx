@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import CatalogClient from "./CatalogClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Product Catalog — Plywood, Hardware & Locks | VLR Traders",
   description:

@@ -5,10 +5,7 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  const products = await getAllProducts();
-  return products.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function CatalogSlugPage({ params }: PageProps) {
   const { slug } = await params;

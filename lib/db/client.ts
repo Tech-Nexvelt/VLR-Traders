@@ -20,7 +20,13 @@ function createClient() {
     );
   }
   // A serverless/edge-friendly Postgres connection (Supabase pooled URL).
-  return postgres(connectionString, { max: 1, ssl: "require" });
+  return postgres(connectionString, {
+    max: 1,
+    ssl: "require",
+    prepare: false,
+    idle_timeout: 20,
+    connect_timeout: 10,
+  });
 }
 
 // Reuse the client across hot reloads in dev so we don't exhaust connections.

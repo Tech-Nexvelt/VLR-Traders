@@ -10,13 +10,7 @@ interface PageProps {
   }>;
 }
 
-// ── SSG: Pre-render all product detail pages at build time ─────
-export async function generateStaticParams() {
-  const products = await getAllProducts();
-  return products.map((p) => ({
-    slug: p.slug,
-  }));
-}
+export const dynamic = "force-dynamic";
 
 // ── DYNAMIC METADATA ──────────────────────────────────────────
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

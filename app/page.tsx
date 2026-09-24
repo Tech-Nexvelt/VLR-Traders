@@ -8,6 +8,8 @@ import { getAllProjects } from "@/lib/projects-store";
 import { getWebsiteSettings } from "@/lib/website-settings-store";
 import styles from "./home.module.css";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "VLR Traders — Plywood, Hardware & Locks",
   description:
