@@ -97,19 +97,31 @@ export function normalizeWebsiteSettings(input: any = {}): WebsiteSettings {
 
 export const DEFAULT_WEBSITE_SETTINGS: WebsiteSettings = normalizeWebsiteSettings({});
 
+let settingsCache: { data: WebsiteSettings; timestamp: number } | null = null;
+const CACHE_TTL = 30000; // 30 seconds
+
+export function clearWebsiteSettingsCache() {
+  settingsCache = null;
+}
+
 /** Get website settings from the database (or default) */
 export async function getWebsiteSettings(): Promise<WebsiteSettings> {
+  const now = Date.now();
+  if (settingsCache && now - settingsCache.timestamp < CACHE_TTL) {
+    return settingsCache.data;
+  }
   try {
     const [row] = await db
       .select()
       .from(websiteSettings)
       .where(eq(websiteSettings.id, SINGLETON_ID))
       .limit(1);
-    if (!row) return DEFAULT_WEBSITE_SETTINGS;
-    return normalizeWebsiteSettings(row.data);
+    const data = !row ? DEFAULT_WEBSITE_SETTINGS : normalizeWebsiteSettings(row.data);
+    settingsCache = { data, timestamp: now };
+    return data;
   } catch (error) {
     console.error("Error reading website settings:", error);
-    return DEFAULT_WEBSITE_SETTINGS;
+    return settingsCache?.data ?? DEFAULT_WEBSITE_SETTINGS;
   }
 }
 
@@ -127,5 +139,6 @@ export async function saveWebsiteSettings(updates: Partial<WebsiteSettings>): Pr
       set: { data: normalized, updatedAt: new Date() },
     });
 
+  clearWebsiteSettingsCache();
   return normalized;
 }

@@ -31,18 +31,31 @@ function toProduct(row: ProductRow, categoryName: string): Product {
   };
 }
 
+let productsCache: { data: Product[]; timestamp: number } | null = null;
+const PRODUCTS_CACHE_TTL = 30000; // 30 seconds
+
+export function clearProductsCache() {
+  productsCache = null;
+}
+
 /** Read all products (with category name joined in) */
 export async function getAllProducts(): Promise<Product[]> {
+  const now = Date.now();
+  if (productsCache && now - productsCache.timestamp < PRODUCTS_CACHE_TTL) {
+    return productsCache.data;
+  }
   try {
     const rows = await db
       .select({ product: products, categoryName: categories.name })
       .from(products)
       .leftJoin(categories, eq(products.categoryId, categories.id))
       .orderBy(desc(products.createdAt));
-    return rows.map((r) => toProduct(r.product, r.categoryName ?? "Uncategorized"));
+    const data = rows.map((r) => toProduct(r.product, r.categoryName ?? "Uncategorized"));
+    productsCache = { data, timestamp: now };
+    return data;
   } catch (error) {
     console.error("Error reading products:", error);
-    return [];
+    return productsCache?.data ?? [];
   }
 }
 
@@ -109,6 +122,7 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
     })
     .returning();
 
+  clearProductsCache();
   return toProduct(row, await categoryNameFor(row.categoryId));
 }
 
@@ -143,12 +157,14 @@ export async function updateProduct(id: string, updates: Partial<CreateProductIn
     .where(eq(products.id, id))
     .returning();
 
+  clearProductsCache();
   return toProduct(row, await categoryNameFor(row.categoryId));
 }
 
 /** Delete a product */
 export async function deleteProduct(id: string): Promise<boolean> {
   const deleted = await db.delete(products).where(eq(products.id, id)).returning({ id: products.id });
+  clearProductsCache();
   return deleted.length > 0;
 }
 

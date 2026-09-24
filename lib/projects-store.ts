@@ -43,14 +43,27 @@ function toProject(row: typeof projects.$inferSelect): Project {
   };
 }
 
+let projectsCache: { data: Project[]; timestamp: number } | null = null;
+const PROJECTS_CACHE_TTL = 30000;
+
+export function clearProjectsCache() {
+  projectsCache = null;
+}
+
 /** Read all projects */
 export async function getAllProjects(): Promise<Project[]> {
+  const now = Date.now();
+  if (projectsCache && now - projectsCache.timestamp < PROJECTS_CACHE_TTL) {
+    return projectsCache.data;
+  }
   try {
     const rows = await db.select().from(projects).orderBy(desc(projects.createdAt));
-    return rows.map(toProject);
+    const data = rows.map(toProject);
+    projectsCache = { data, timestamp: now };
+    return data;
   } catch (error) {
     console.error("Error reading projects:", error);
-    return [];
+    return projectsCache?.data ?? [];
   }
 }
 
@@ -108,6 +121,7 @@ export async function createProject(input: CreateProjectInput): Promise<Project>
     })
     .returning();
 
+  clearProjectsCache();
   return toProject(row);
 }
 
@@ -141,12 +155,14 @@ export async function updateProject(id: string, updates: Partial<CreateProjectIn
     .where(eq(projects.id, id))
     .returning();
 
+  clearProjectsCache();
   return toProject(row);
 }
 
 /** Delete project */
 export async function deleteProject(id: string): Promise<boolean> {
   const deleted = await db.delete(projects).where(eq(projects.id, id)).returning({ id: projects.id });
+  clearProjectsCache();
   return deleted.length > 0;
 }
 

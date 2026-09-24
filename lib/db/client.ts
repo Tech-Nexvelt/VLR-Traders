@@ -3,9 +3,17 @@
 // ============================================================
 
 import "server-only";
+import dns from "node:dns";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
+
+// Force IPv4 DNS resolution first to prevent 20s IPv6 socket timeouts on Vercel / AWS Lambda
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch {
+  // Ignored in non-Node environments
+}
 
 declare global {
   // eslint-disable-next-line no-var

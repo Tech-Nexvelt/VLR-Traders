@@ -5,11 +5,18 @@ import { getAllProjects, createProject } from "@/lib/projects-store";
 export async function GET() {
   try {
     const projects = await getAllProjects();
-    return NextResponse.json({
-      success: true,
-      count: projects.length,
-      projects,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        count: projects.length,
+        projects,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, max-age=10, s-maxage=60, stale-while-revalidate=3600",
+        },
+      }
+    );
   } catch (error) {
     return NextResponse.json(
       { success: false, error: "Failed to fetch projects" },

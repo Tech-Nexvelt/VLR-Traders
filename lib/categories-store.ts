@@ -17,13 +17,28 @@ function toCategory(row: typeof categories.$inferSelect): Category {
   return { id: row.id, name: row.name, slug: row.slug, imageUrl: row.imageUrl ?? null };
 }
 
+let categoriesCache: { data: Category[]; timestamp: number } | null = null;
+let categoriesWithCoverCache: { data: CategoryWithCover[]; timestamp: number } | null = null;
+const CATEGORIES_CACHE_TTL = 30000;
+
+export function clearCategoriesCache() {
+  categoriesCache = null;
+  categoriesWithCoverCache = null;
+}
+
 export async function getAllCategories(): Promise<Category[]> {
+  const now = Date.now();
+  if (categoriesCache && now - categoriesCache.timestamp < CATEGORIES_CACHE_TTL) {
+    return categoriesCache.data;
+  }
   try {
     const rows = await db.select().from(categories).orderBy(asc(categories.name));
-    return rows.map(toCategory);
+    const data = rows.map(toCategory);
+    categoriesCache = { data, timestamp: now };
+    return data;
   } catch (error) {
     console.error("Error reading categories:", error);
-    return [];
+    return categoriesCache?.data ?? [];
   }
 }
 
@@ -33,6 +48,10 @@ export async function getAllCategories(): Promise<Category[]> {
  * 2) first Active product image in that category.
  */
 export async function getCategoriesWithCoverImage(): Promise<CategoryWithCover[]> {
+  const now = Date.now();
+  if (categoriesWithCoverCache && now - categoriesWithCoverCache.timestamp < CATEGORIES_CACHE_TTL) {
+    return categoriesWithCoverCache.data;
+  }
   try {
     const rows = await db
       .select({
@@ -53,16 +72,18 @@ export async function getCategoriesWithCoverImage(): Promise<CategoryWithCover[]
       .from(categories)
       .orderBy(asc(categories.name));
 
-    return rows.map((r) => ({
+    const data = rows.map((r) => ({
       id: r.id,
       name: r.name,
       slug: r.slug,
       imageUrl: r.imageUrl ?? null,
       coverImage: r.imageUrl || r.productCoverImage || null,
     }));
+    categoriesWithCoverCache = { data, timestamp: now };
+    return data;
   } catch (error) {
     console.error("Error reading categories with cover:", error);
-    return [];
+    return categoriesWithCoverCache?.data ?? [];
   }
 }
 
@@ -99,6 +120,7 @@ export async function createCategory(name: string, imageUrl?: string | null): Pr
     .insert(categories)
     .values({ id, name: name.trim(), slug, imageUrl: imageUrl?.trim() || null })
     .returning();
+  clearCategoriesCache();
   return toCategory(row);
 }
 
@@ -128,6 +150,7 @@ export async function updateCategory(
     .where(eq(categories.id, id))
     .returning();
 
+  clearCategoriesCache();
   return row ? toCategory(row) : null;
 }
 
@@ -147,5 +170,6 @@ export async function deleteCategory(id: string): Promise<{ success: boolean; er
   }
 
   await db.delete(categories).where(eq(categories.id, id));
+  clearCategoriesCache();
   return { success: true };
 }
