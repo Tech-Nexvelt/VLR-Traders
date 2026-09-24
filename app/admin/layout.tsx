@@ -15,6 +15,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
+    if (isLoginPage) return;
+
     // Fetch live lead count for sidebar badge
     fetch("/api/leads")
       .then((res) => res.json())
@@ -30,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         if (data.success) setProfile(data.profile);
       })
       .catch(() => {});
-  }, []);
+  }, [isLoginPage]);
 
   const handleLogout = async () => {
     try {
