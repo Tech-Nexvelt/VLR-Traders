@@ -126,8 +126,8 @@ DATABASE_URL="postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supab
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 # Optional: Supabase Service Keys
-NEXT_PUBLIC_SUPABASE_URL="https://[ref].supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+PUBLIC_SUPABASE_URL="https://[ref].supabase.co"
+SUPABASE_ANON_KEY="your-anon-key"
 ```
 
 ---

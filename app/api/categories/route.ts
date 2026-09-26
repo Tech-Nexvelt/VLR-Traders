@@ -1,42 +1,36 @@
 import { NextResponse } from "next/server";
-import { getCategoriesWithCoverImage, createCategory } from "@/lib/categories-store";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-// GET /api/categories — list all categories (with coverImage derived from products)
 export async function GET() {
   try {
-    const categories = await getCategoriesWithCoverImage();
-    return NextResponse.json(
-      { success: true, categories },
-      {
-        headers: {
-          "Cache-Control": "public, max-age=10, s-maxage=60, stale-while-revalidate=3600",
-        },
-      }
-    );
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch categories" },
-      { status: 500 }
-    );
-  }
-}
+    const supabase = createSupabaseServerClient();
 
-// POST /api/categories — create a new category
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    if (!body.name || !body.name.trim()) {
-      return NextResponse.json(
-        { success: false, error: "Category name is required" },
-        { status: 400 }
-      );
+    const { data, error } = await supabase
+      .schema("website")
+      .from("categories")
+      .select("*");
+
+    console.log("CATEGORIES DATA:", data);
+    console.log("CATEGORIES ERROR:", error);
+
+    if (error) {
+      console.error("API ERROR:", error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    const category = await createCategory(body.name, body.imageUrl);
-    return NextResponse.json({ success: true, category, message: "Category created successfully" });
-  } catch (error: any) {
+    const categories = (data || []).map((cat: any) => ({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      imageUrl: cat.cover_image || cat.image_url || null,
+      coverImage: cat.cover_image || cat.image_url || null,
+    }));
+
+    return NextResponse.json({ success: true, categories, data: data || [] });
+  } catch (err: any) {
+    console.error("GET /api/categories Exception:", err);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to create category" },
+      { success: false, error: err.message || "Failed to fetch categories" },
       { status: 500 }
     );
   }

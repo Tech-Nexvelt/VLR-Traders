@@ -1,20 +1,15 @@
 // ============================================================
-// VLR Traders — Categories Data Store (Postgres via Drizzle)
+// VLR Traders — Categories Data Store (Supabase `website` schema)
 // ============================================================
 
-import { and, asc, eq, ne, sql } from "drizzle-orm";
-import { db } from "@/lib/db/client";
-import { categories, products } from "@/lib/db/schema";
+import { getSupabaseServerAdminClient } from "@/lib/supabase/server";
+import { parseProductImages } from "@/lib/products-store";
 import { generateSlug } from "@/lib/slug";
 import type { Category } from "@/data/products";
 
 export interface CategoryWithCover extends Category {
-  /** First product image URL for this category, or null if no products yet. */
+  /** First active product image URL for this category, or cover_image, or null. */
   coverImage: string | null;
-}
-
-function toCategory(row: typeof categories.$inferSelect): Category {
-  return { id: row.id, name: row.name, slug: row.slug, imageUrl: row.imageUrl ?? null };
 }
 
 let categoriesCache: { data: Category[]; timestamp: number } | null = null;
@@ -26,16 +21,34 @@ export function clearCategoriesCache() {
   categoriesWithCoverCache = null;
 }
 
+/** Read all categories using schema-aware query: supabase.schema('website').from('categories') */
 export async function getAllCategories(): Promise<Category[]> {
   const now = Date.now();
   if (categoriesCache && now - categoriesCache.timestamp < CATEGORIES_CACHE_TTL) {
     return categoriesCache.data;
   }
   try {
-    const rows = await db.select().from(categories).orderBy(asc(categories.name));
-    const data = rows.map(toCategory);
-    categoriesCache = { data, timestamp: now };
-    return data;
+    const supabase = getSupabaseServerAdminClient();
+    const { data, error } = await supabase
+      .schema("website")
+      .from("categories")
+      .select("*")
+      .order("name", { ascending: true });
+
+    if (error) {
+      console.error("Supabase getAllCategories error:", error);
+      return categoriesCache?.data ?? [];
+    }
+
+    const result: Category[] = (data || []).map((cat: any) => ({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      imageUrl: cat.cover_image || cat.image_url || null,
+    }));
+
+    categoriesCache = { data: result, timestamp: now };
+    return result;
   } catch (error) {
     console.error("Error reading categories:", error);
     return categoriesCache?.data ?? [];
@@ -44,8 +57,8 @@ export async function getAllCategories(): Promise<Category[]> {
 
 /**
  * Returns all categories enriched with a coverImage derived from
- * 1) category.imageUrl if explicitly set, or
- * 2) first Active product image in that category.
+ * 1) category.cover_image / image_url if explicitly set, or
+ * 2) fallback to first Active product image (images[0]) in that category.
  */
 export async function getCategoriesWithCoverImage(): Promise<CategoryWithCover[]> {
   const now = Date.now();
@@ -53,32 +66,54 @@ export async function getCategoriesWithCoverImage(): Promise<CategoryWithCover[]
     return categoriesWithCoverCache.data;
   }
   try {
-    const rows = await db
-      .select({
-        id: categories.id,
-        name: categories.name,
-        slug: categories.slug,
-        imageUrl: categories.imageUrl,
-        productCoverImage: sql<string | null>`(
-          SELECT p.images->0
-          FROM website.products p
-          WHERE p.category_id = ${categories.id}
-            AND p.status = 'Active'
-            AND jsonb_array_length(p.images) > 0
-          ORDER BY p.created_at ASC
-          LIMIT 1
-        )`,
-      })
-      .from(categories)
-      .orderBy(asc(categories.name));
+    const supabase = getSupabaseServerAdminClient();
 
-    const data = rows.map((r) => ({
-      id: r.id,
-      name: r.name,
-      slug: r.slug,
-      imageUrl: r.imageUrl ?? null,
-      coverImage: r.imageUrl || r.productCoverImage || null,
-    }));
+    // 1. Query categories using schema-aware query: supabase.schema('website').from('categories')
+    const { data: categoriesData, error: catError } = await supabase
+      .schema("website")
+      .from("categories")
+      .select("*")
+      .order("name", { ascending: true });
+
+    if (catError) {
+      console.error("Supabase categories error in getCategoriesWithCoverImage:", catError);
+      return categoriesWithCoverCache?.data ?? [];
+    }
+
+    // 2. Query active products using schema-aware query: supabase.schema('website').from('products').eq('status', 'Active')
+    const { data: productsData, error: prodError } = await supabase
+      .schema("website")
+      .from("products")
+      .select("*")
+      .eq("status", "Active")
+      .order("created_at", { ascending: true });
+
+    if (prodError) {
+      console.error("Supabase products error in getCategoriesWithCoverImage:", prodError);
+    }
+
+    const activeProducts = productsData || [];
+
+    const data: CategoryWithCover[] = (categoriesData || []).map((cat: any) => {
+      // Priority 1: Explicit cover_image column or image_url column
+      const explicitCover = cat.cover_image || cat.image_url || null;
+
+      // Priority 2: Fallback to first active product's images[0] in this category
+      const firstCatProduct = activeProducts.find(
+        (p: any) => (p.category_id || p.categoryId) === cat.id
+      );
+      const productImages = parseProductImages(firstCatProduct?.images);
+      const fallbackProductCover = productImages[0] || null;
+
+      return {
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        imageUrl: cat.cover_image || cat.image_url || null,
+        coverImage: explicitCover || fallbackProductCover,
+      };
+    });
+
     categoriesWithCoverCache = { data, timestamp: now };
     return data;
   } catch (error) {
@@ -88,88 +123,163 @@ export async function getCategoriesWithCoverImage(): Promise<CategoryWithCover[]
 }
 
 export async function getCategoryById(id: string): Promise<Category | null> {
-  const [row] = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
-  return row ? toCategory(row) : null;
+  try {
+    const supabase = getSupabaseServerAdminClient();
+    const { data, error } = await supabase
+      .schema("website")
+      .from("categories")
+      .select("*")
+      .eq("id", id)
+      .limit(1);
+
+    if (error) {
+      console.error("Supabase getCategoryById error:", error);
+      return null;
+    }
+
+    if (!data || data.length === 0) return null;
+    const cat = data[0];
+    return {
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      imageUrl: cat.cover_image || cat.image_url || null,
+    };
+  } catch (error) {
+    console.error("Error fetching category by ID:", error);
+    return null;
+  }
 }
 
 async function findUniqueSlug(baseName: string, excludeId?: string): Promise<string> {
+  const supabase = getSupabaseServerAdminClient();
   const baseSlug = generateSlug(baseName);
   let candidate = baseSlug;
   let counter = 1;
 
   while (true) {
-    const existing = await db
-      .select({ id: categories.id })
-      .from(categories)
-      .where(
-        excludeId
-          ? and(eq(categories.slug, candidate), ne(categories.id, excludeId))
-          : eq(categories.slug, candidate)
-      )
-      .limit(1);
-    if (existing.length === 0) return candidate;
+    let query = supabase
+      .schema("website")
+      .from("categories")
+      .select("id")
+      .eq("slug", candidate);
+
+    if (excludeId) query = query.neq("id", excludeId);
+
+    const { data, error } = await query.limit(1);
+    if (error) {
+      console.error("Supabase findUniqueSlug error:", error);
+      return candidate;
+    }
+    if (!data || data.length === 0) return candidate;
     candidate = `${baseSlug}-${counter}`;
     counter++;
   }
 }
 
 export async function createCategory(name: string, imageUrl?: string | null): Promise<Category> {
+  const supabase = getSupabaseServerAdminClient();
   const slug = await findUniqueSlug(name);
   const id = `cat-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 5)}`;
-  const [row] = await db
-    .insert(categories)
-    .values({ id, name: name.trim(), slug, imageUrl: imageUrl?.trim() || null })
-    .returning();
+  const cleanImage = imageUrl?.trim() || null;
+
+  const { data, error } = await supabase
+    .schema("website")
+    .from("categories")
+    .insert([{ id, name: name.trim(), slug, cover_image: cleanImage, image_url: cleanImage }])
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Error creating category:", error);
+    throw new Error(error.message || "Failed to create category");
+  }
+
   clearCategoriesCache();
-  return toCategory(row);
+  return {
+    id: data.id,
+    name: data.name,
+    slug: data.slug,
+    imageUrl: data.cover_image || data.image_url || null,
+  };
 }
 
 export async function updateCategory(
   id: string,
   data: { name?: string; imageUrl?: string | null }
 ): Promise<Category | null> {
+  const supabase = getSupabaseServerAdminClient();
   const existing = await getCategoryById(id);
   if (!existing) return null;
 
-  const updateFields: { name?: string; slug?: string; imageUrl?: string | null } = {};
+  const payload: Record<string, any> = {};
   if (data.name !== undefined && data.name.trim() !== existing.name) {
-    updateFields.name = data.name.trim();
-    updateFields.slug = await findUniqueSlug(data.name, id);
+    payload.name = data.name.trim();
+    payload.slug = await findUniqueSlug(data.name, id);
   }
   if (data.imageUrl !== undefined) {
-    updateFields.imageUrl = data.imageUrl ? data.imageUrl.trim() : null;
+    const cleanImg = data.imageUrl ? data.imageUrl.trim() : null;
+    payload.cover_image = cleanImg;
+    payload.image_url = cleanImg;
   }
 
-  if (Object.keys(updateFields).length === 0) {
+  if (Object.keys(payload).length === 0) {
     return existing;
   }
 
-  const [row] = await db
-    .update(categories)
-    .set(updateFields)
-    .where(eq(categories.id, id))
-    .returning();
+  const { data: updated, error } = await supabase
+    .schema("website")
+    .from("categories")
+    .update(payload)
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Error updating category:", error);
+    return null;
+  }
 
   clearCategoriesCache();
-  return row ? toCategory(row) : null;
+  return {
+    id: updated.id,
+    name: updated.name,
+    slug: updated.slug,
+    imageUrl: updated.cover_image || updated.image_url || null,
+  };
 }
 
 export async function deleteCategory(id: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = getSupabaseServerAdminClient();
+
   // Check if products exist in this category
-  const existingProducts = await db
-    .select({ id: products.id })
-    .from(products)
-    .where(eq(products.categoryId, id))
+  const { data: existingProducts, error: checkError } = await supabase
+    .schema("website")
+    .from("products")
+    .select("id")
+    .eq("category_id", id)
     .limit(1);
 
-  if (existingProducts.length > 0) {
+  if (checkError) console.error("Supabase check existing products error:", checkError);
+
+  if (existingProducts && existingProducts.length > 0) {
     return {
       success: false,
       error: "Cannot delete category because products are assigned to it. Please reassign or remove the products first.",
     };
   }
 
-  await db.delete(categories).where(eq(categories.id, id));
+  const { error } = await supabase
+    .schema("website")
+    .from("categories")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error deleting category:", error);
+    return { success: false, error: error.message };
+  }
+
   clearCategoriesCache();
   return { success: true };
 }

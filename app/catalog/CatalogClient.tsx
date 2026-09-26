@@ -181,7 +181,7 @@ export default function CatalogClient() {
           setLiveProducts(data.products);
         }
       })
-      .catch(() => { });
+      .catch((error) => console.error("CatalogClient error fetching products:", error));
 
     fetch("/api/categories")
       .then((res) => res.json())
@@ -191,7 +191,7 @@ export default function CatalogClient() {
           setCategories(data.categories.filter((c: Category) => c.slug !== "services"));
         }
       })
-      .catch(() => { });
+      .catch((error) => console.error("CatalogClient error fetching categories:", error));
   }, []);
 
   const categoryCounts = useMemo(() => getCategoryCounts(liveProducts), [liveProducts]);

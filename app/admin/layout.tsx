@@ -3,7 +3,23 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Users, Package, FolderKanban, Sliders, Globe, Home, LogOut, Search, Bell, ExternalLink } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Package,
+  FolderKanban,
+  Sliders,
+  Globe,
+  Home,
+  LogOut,
+  Search,
+  Bell,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  X,
+} from "lucide-react";
 import styles from "./admin-layout.module.css";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -11,6 +27,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [leadCount, setLeadCount] = useState<number>(0);
   const [profile, setProfile] = useState<{ fullName: string; email: string } | null>(null);
+
+  // Collapse state for desktop sidebar (250px -> 70px)
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  // Drawer open state for mobile responsive navigation
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
 
   const isLoginPage = pathname === "/admin/login";
 
@@ -25,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       })
       .catch(() => {});
 
-    // Fetch the logged-in quotation_pro.profiles record for the header
+    // Fetch the logged-in user profile
     fetch("/api/admin/auth/me")
       .then((res) => res.json())
       .then((data) => {
@@ -33,6 +54,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       })
       .catch(() => {});
   }, [isLoginPage]);
+
+  // Close mobile drawer on route navigation
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -43,9 +69,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   };
 
-  // If login page, render without admin chrome.
-  // (The proxy already redirects unauthenticated requests to every other
-  // /admin/** route before this component ever renders — see proxy.ts.)
   if (isLoginPage) {
     return <>{children}</>;
   }
@@ -61,17 +84,55 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className={styles.adminWrapper}>
+      {/* Mobile Drawer Backdrop Overlay */}
+      {mobileOpen && (
+        <div
+          className={styles.mobileBackdrop}
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ── LEFT SIDEBAR ───────────────────────────────────── */}
-      <aside className={styles.sidebar}>
-        <div>
-          {/* Brand */}
-          <Link href="/" className={styles.brandWrap}>
-            <div className={styles.brandLogoCircle}>VLR</div>
-            <div className={styles.brandTextGroup}>
-              <span className={styles.brandName}>VLR TRADERS</span>
-              <span className={styles.brandSub}>MINI CRM</span>
-            </div>
-          </Link>
+      <aside
+        className={`${styles.sidebar} ${collapsed ? styles.sidebarCollapsed : ""} ${
+          mobileOpen ? styles.mobileSidebarOpen : ""
+        }`}
+      >
+        {/* Toggle Button (Floating on edge between sidebar & topbar, vertically centered at 16px) */}
+        <button
+          type="button"
+          onClick={() => setCollapsed(!collapsed)}
+          className={styles.collapseToggleBtn}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
+
+        <div className={styles.sidebarTop}>
+          {/* Header / Brand Section (Fixed 64px height) */}
+          <div className={styles.sidebarHeader}>
+            <Link href="/" className={styles.brandWrap}>
+              <div className={styles.brandLogoCircle}>VLR</div>
+              {!collapsed && (
+                <div className={styles.brandTextGroup}>
+                  <span className={styles.brandName}>VLR TRADERS</span>
+                  <span className={styles.brandSub}>MINI CRM</span>
+                </div>
+              )}
+            </Link>
+
+            {/* Mobile Close Button */}
+            <button
+              type="button"
+              className={styles.mobileCloseBtn}
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close sidebar"
+            >
+              <X size={20} />
+            </button>
+          </div>
 
           {/* Nav List */}
           <nav className={styles.navSection}>
@@ -82,13 +143,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   key={item.href}
                   href={item.href}
                   className={`${styles.navLink} ${isActive ? styles.activeNavLink : ""}`}
+                  title={collapsed ? item.label : undefined}
                 >
                   <div className={styles.navLinkContent}>
-                    <span className={styles.navIcon} style={{ display: "inline-flex", alignItems: "center" }}>{item.icon}</span>
-                    <span>{item.label}</span>
+                    <span className={styles.navIcon}>{item.icon}</span>
+                    {!collapsed && <span className={styles.navLabel}>{item.label}</span>}
                   </div>
                   {item.badge !== undefined && (
-                    <span className={styles.badgePill}>{item.badge}</span>
+                    <span className={`${styles.badgePill} ${collapsed ? styles.badgePillDot : ""}`}>
+                      {collapsed ? "" : item.badge}
+                    </span>
                   )}
                 </Link>
               );
@@ -96,26 +160,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </div>
 
-        <div>
-          {/* Sidebar Promo Card (Mockup bottom left) */}
-          <div className={styles.promoCard}>
-            <span className={styles.promoIcon} style={{ display: "inline-flex", alignItems: "center" }}>
-              <Home size={20} color="#1b4f8a" />
-            </span>
-            <h4 className={styles.promoTitle}>Grow Your Business</h4>
-            <p className={styles.promoDesc}>
-              Manage enquiries, update products and track your growth — all in one place.
-            </p>
-            <a href="/" target="_blank" className={styles.promoBtn} style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
-              View Website <ExternalLink size={12} />
-            </a>
-          </div>
+        <div className={styles.sidebarBottom}>
+          {/* Sidebar Promo Card (Hidden when collapsed) */}
+          {!collapsed && (
+            <div className={styles.promoCard}>
+              <span className={styles.promoIcon}>
+                <Home size={20} color="#1b4f8a" />
+              </span>
+              <h4 className={styles.promoTitle}>Grow Your Business</h4>
+              <p className={styles.promoDesc}>
+                Manage enquiries, update products and track your growth — all in one place.
+              </p>
+              <a href="/" target="_blank" className={styles.promoBtn}>
+                View Website <ExternalLink size={12} />
+              </a>
+            </div>
+          )}
 
           {/* Footer utilities */}
           <div className={styles.sidebarFooterNav}>
-            <button type="button" className={styles.logoutBtn} onClick={handleLogout}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-                <LogOut size={16} /> Logout
+            <button
+              type="button"
+              className={styles.logoutBtn}
+              onClick={handleLogout}
+              title={collapsed ? "Logout" : undefined}
+            >
+              <span className={styles.logoutContent}>
+                <LogOut size={16} />
+                {!collapsed && <span>Logout</span>}
               </span>
             </button>
           </div>
@@ -124,18 +196,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* ── MAIN CONTENT AREA ────────────────────────────────── */}
       <div className={styles.mainContainer}>
-        {/* Top Header */}
+        {/* Top Header Bar (Fixed 64px height) */}
         <header className={styles.topHeader}>
-          <div className={styles.searchWrap}>
-            <span className={styles.searchIcon} style={{ display: "inline-flex", alignItems: "center" }}>
-              <Search size={16} color="#64748b" />
-            </span>
-            <input
-              type="search"
-              className={styles.searchInput}
-              placeholder="Search leads, products, or anything..."
-            />
-            <span className={styles.shortcutKbd}>⌘ K</span>
+          <div className={styles.headerLeft}>
+            {/* Mobile Hamburger Menu Toggle */}
+            <button
+              type="button"
+              className={styles.mobileHamburgerBtn}
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open navigation menu"
+            >
+              <Menu size={20} />
+            </button>
+
+            {/* Search Input */}
+            <div className={styles.searchWrap}>
+              <span className={styles.searchIcon}>
+                <Search size={16} color="#64748b" />
+              </span>
+              <input
+                type="search"
+                className={styles.searchInput}
+                placeholder="Search leads, products, or anything..."
+              />
+              <span className={styles.shortcutKbd}>⌘ K</span>
+            </div>
           </div>
 
           <div className={styles.headerActions}>

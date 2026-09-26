@@ -1250,6 +1250,362 @@ export default function AdminCatalogView() {
           </div>
         </div>
       )}
+
+      {/* ── ADD / EDIT PRODUCT DRAWER MODAL ─────────────────────── */}
+      {isDrawerOpen && (
+        <div className={styles.drawerOverlay} onClick={() => setIsDrawerOpen(false)}>
+          <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.drawerHeader}>
+              <h3 className={styles.drawerTitle}>
+                {editingId ? "Edit Product" : "Add New Product"}
+              </h3>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={() => setIsDrawerOpen(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className={styles.drawerTabs}>
+              <button
+                type="button"
+                className={`${styles.tabBtn} ${drawerTab === "details" ? styles.tabBtnActive : ""}`}
+                onClick={() => setDrawerTab("details")}
+              >
+                Product Details
+              </button>
+              <button
+                type="button"
+                className={`${styles.tabBtn} ${drawerTab === "images" ? styles.tabBtnActive : ""}`}
+                onClick={() => setDrawerTab("images")}
+              >
+                Images ({formImages.length})
+              </button>
+              <button
+                type="button"
+                className={`${styles.tabBtn} ${drawerTab === "documents" ? styles.tabBtnActive : ""}`}
+                onClick={() => setDrawerTab("documents")}
+              >
+                Brochures & Specs ({formDocuments.length})
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProduct} style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
+              <div className={styles.drawerBody}>
+                {drawerTab === "details" && (
+                  <>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Product Name <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        placeholder="e.g. Century Club Prime Plywood"
+                        value={formName}
+                        onChange={(e) => setFormName(e.target.value)}
+                        required
+                      />
+                      <div className={styles.slugHint}>
+                        URL Slug Preview: <span className={styles.slugHighlight}>/products/{generatedSlugPreview}</span>
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Category <span className={styles.required}>*</span>
+                        </label>
+                        <select
+                          className={styles.select}
+                          value={formCategoryId}
+                          onChange={(e) => setFormCategoryId(e.target.value)}
+                          required
+                        >
+                          <option value="">Select Category</option>
+                          {categories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Brand <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          placeholder="e.g. Century, Vanam, Sylvan"
+                          value={formBrand}
+                          onChange={(e) => setFormBrand(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Material</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          placeholder="e.g. BWP Grade Marine Plywood"
+                          value={formMaterial}
+                          onChange={(e) => setFormMaterial(e.target.value)}
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Finish</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          placeholder="e.g. Matte, High Gloss, Textured"
+                          value={formFinish}
+                          onChange={(e) => setFormFinish(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Badge</label>
+                        <select
+                          className={styles.select}
+                          value={formBadge}
+                          onChange={(e) => setFormBadge(e.target.value as (typeof BADGE_OPTIONS)[number])}
+                        >
+                          {BADGE_OPTIONS.map((b) => (
+                            <option key={b} value={b}>
+                              {b}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Status</label>
+                        <select
+                          className={styles.select}
+                          value={formStatus}
+                          onChange={(e) => setFormStatus(e.target.value as "Active" | "Inactive")}
+                        >
+                          <option value="Active">Active</option>
+                          <option value="Inactive">Inactive</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Description</label>
+                      <textarea
+                        className={styles.textarea}
+                        placeholder="Detailed description of product features, specifications, and warranty..."
+                        value={formDesc}
+                        onChange={(e) => setFormDesc(e.target.value)}
+                        rows={4}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {drawerTab === "images" && (
+                  <>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Upload Product Images</label>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept="image/*"
+                        multiple
+                        style={{ display: "none" }}
+                      />
+                      <div className={styles.uploadBox} onClick={() => fileInputRef.current?.click()}>
+                        <div className={styles.uploadIcon} style={{ display: "flex", justifyContent: "center" }}>
+                          <UploadCloud size={32} color="#0f2b5c" />
+                        </div>
+                        <div className={styles.uploadTitle}>
+                          {isUploading ? "Uploading images..." : "Click or drag to upload product images"}
+                        </div>
+                        <div className={styles.uploadSubtitle}>Supports PNG, JPG, WebP</div>
+                      </div>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Or Add Image URL</label>
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <input
+                          type="url"
+                          className={styles.input}
+                          placeholder="https://example.com/image.jpg"
+                          value={formUrlInput}
+                          onChange={(e) => setFormUrlInput(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className={styles.cancelBtn}
+                          onClick={handleAddUrlImage}
+                          style={{ minHeight: "42px" }}
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+
+                    {formImages.length > 0 && (
+                      <div className={styles.imageGrid}>
+                        {formImages.map((img, idx) => (
+                          <div key={idx} className={styles.imageThumbWrap}>
+                            <img src={img} alt={`Product ${idx}`} className={styles.imageThumb} />
+                            <button
+                              type="button"
+                              className={styles.removeImgBtn}
+                              onClick={() => handleRemoveImage(idx)}
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {drawerTab === "documents" && (
+                  <>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Upload Brochures / Technical Data Sheets (PDF)</label>
+                      <input
+                        type="file"
+                        ref={docInputRef}
+                        onChange={handleDocFileChange}
+                        accept=".pdf"
+                        multiple
+                        style={{ display: "none" }}
+                      />
+                      <div className={styles.uploadBox} onClick={() => docInputRef.current?.click()}>
+                        <div className={styles.uploadIcon} style={{ display: "flex", justifyContent: "center" }}>
+                          <FileText size={32} color="#0f2b5c" />
+                        </div>
+                        <div className={styles.uploadTitle}>
+                          {isUploadingDoc ? "Uploading PDF document..." : "Click to upload product PDF documents"}
+                        </div>
+                        <div className={styles.uploadSubtitle}>PDF documents up to 10MB</div>
+                      </div>
+                    </div>
+
+                    {formDocuments.length > 0 && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        {formDocuments.map((doc: ProductDocument, idx: number) => (
+                          <div
+                            key={idx}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              padding: "0.625rem 0.875rem",
+                              background: "#f8fafc",
+                              borderRadius: "0.5rem",
+                              border: "1px solid #e2e8f0",
+                            }}
+                          >
+
+
+
+
+
+
+
+
+
+
+
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                              <FileText size={16} color="#0f2b5c" />
+                              <span style={{ fontSize: "0.875rem", fontWeight: 500, color: "#334155" }}>
+                                {doc.name}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              style={{ background: "none", border: "none", color: "#dc2626", cursor: "pointer" }}
+                              onClick={() => handleRemoveDocument(idx)}
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              <div className={styles.drawerFooter}>
+                <button
+                  type="button"
+                  className={styles.cancelBtn}
+                  onClick={() => setIsDrawerOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className={styles.primaryBtn} disabled={isSaving}>
+                  {isSaving ? "Saving..." : editingId ? "Update Product" : "Create Product"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── DELETE PRODUCT CONFIRMATION MODAL ────────────────────── */}
+      {deletingProduct && (
+        <div className={styles.catModalOverlay} onClick={() => setDeletingProduct(null)}>
+          <div className={styles.catModalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.catModalHeader}>
+              <h3 className={styles.catModalTitle}>Confirm Delete Product</h3>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={() => setDeletingProduct(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className={styles.catModalBody}>
+              <p style={{ color: "#334155", fontSize: "0.9375rem", margin: 0 }}>
+                Are you sure you want to delete product <strong>"{deletingProduct.name}"</strong>?
+              </p>
+              <p style={{ color: "#64748b", fontSize: "0.8125rem", marginTop: "0.5rem", marginBottom: 0 }}>
+                This action cannot be undone.
+              </p>
+            </div>
+            <div className={styles.catModalFooter}>
+              <button
+                type="button"
+                className={styles.cancelBtn}
+                onClick={() => setDeletingProduct(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={`${styles.catActionBtn} ${styles.catActionBtnDanger}`}
+                style={{ minHeight: "44px", padding: "0.625rem 1.25rem", fontSize: "0.875rem" }}
+                onClick={handleDeleteConfirm}
+              >
+                Delete Product
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

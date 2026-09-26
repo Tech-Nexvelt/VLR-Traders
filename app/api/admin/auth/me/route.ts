@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { qpProfiles } from "@/lib/db/quotation-pro";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseUserClient } from "@/lib/supabase/server";
 
 export async function GET() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseUserClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

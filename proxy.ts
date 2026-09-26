@@ -50,8 +50,8 @@ function isProtectedApiRequest(pathname: string, method: string): boolean {
 async function isAuthorized(request: NextRequest, response: NextResponse): Promise<boolean> {
   try {
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      process.env.PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY!,
       {
         cookies: {
           getAll() {

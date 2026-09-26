@@ -1,15 +1,50 @@
 import { NextResponse } from "next/server";
-import { getAllProducts, createProduct } from "@/lib/products-store";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { parseProductImages, createProduct } from "@/lib/products-store";
 
-// GET /api/products — Get all products
+// GET /api/products — Basic fetch test on website.products
 export async function GET() {
   try {
-    const products = await getAllProducts();
+    const supabase = createSupabaseServerClient();
+
+    const { data, error } = await supabase
+      .schema("website")
+      .from("products")
+      .select("*");
+
+    console.log("PRODUCTS DATA:", data);
+    console.log("PRODUCTS ERROR:", error);
+
+    if (error) {
+      console.error("API ERROR:", error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    const products = (data || []).map((row: any) => ({
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      categoryId: row.category_id || row.categoryId,
+      categoryName: "Uncategorized",
+      brand: row.brand || "",
+      material: row.material ?? undefined,
+      finish: row.finish ?? undefined,
+      status: row.status || "Active",
+      images: parseProductImages(row.images),
+      documents: row.documents || [],
+      description: row.description || "",
+      longDescription: row.long_description || row.description || "",
+      badge: row.badge ?? undefined,
+      featured: Boolean(row.featured),
+      createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+    }));
+
     return NextResponse.json(
       {
         success: true,
         count: products.length,
         products,
+        data: data || [],
       },
       {
         headers: {
@@ -17,9 +52,10 @@ export async function GET() {
         },
       }
     );
-  } catch (error) {
+  } catch (error: any) {
+    console.error("GET /api/products Error:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch products" },
+      { success: false, error: error.message || "Failed to fetch products" },
       { status: 500 }
     );
   }
@@ -70,6 +106,7 @@ export async function POST(req: Request) {
       message: "Product created successfully",
     });
   } catch (error: any) {
+    console.error("POST /api/products Error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to create product" },
       { status: 500 }
