@@ -1,11 +1,12 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
 
 /**
- * Ensures .env.local variables are populated in local development
- * even if the dev server was started before .env.local was created/edited.
+ * Ensures .env.local variables are populated in local development.
  */
 function ensureEnvLoaded() {
   if (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) return;
@@ -31,66 +32,53 @@ function ensureEnvLoaded() {
 }
 
 /**
- * Server-side Supabase client for Server Components, Server Actions, and Route Handlers.
+ * Server-side admin/service client for database queries.
  */
 export function createSupabaseServerClient() {
   ensureEnvLoaded();
 
-  let url =
+  const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
     process.env.SUPABASE_URL ||
     process.env.PUBLIC_SUPABASE_URL;
 
-  let key =
+  const supabaseKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     process.env.SUPABASE_ANON_KEY;
 
-  // Fallback URL resolution from DATABASE_URL if URL is missing
-  if (!url && process.env.DATABASE_URL) {
-    try {
-      const match = process.env.DATABASE_URL.match(/db\.([a-z0-9]+)\.supabase\.co/);
-      if (match && match[1]) {
-        url = `https://${match[1]}.supabase.co`;
-      }
-    } catch {
-      // Ignored
-    }
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Missing Supabase ENV in production or local environment");
   }
 
-  console.log("SUPABASE URL:", url);
-  console.log("SUPABASE KEY EXISTS:", !!key);
+  console.log("SUPABASE URL:", supabaseUrl);
 
-  if (!url || !key) {
-    throw new Error(
-      "Missing Supabase environment variables: Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your environment variables or .env.local file."
-    );
-  }
-
-  return createClient(url, key, {
+  return createClient(supabaseUrl, supabaseKey, {
     auth: { persistSession: false },
   });
 }
 
 /**
- * Cookie-aware Supabase client for authenticating current user sessions via cookies.
+ * Cookie-aware SSR client for authenticating current user session.
  */
 export async function createSupabaseUserClient() {
   ensureEnvLoaded();
-  const { createServerClient } = await import("@supabase/ssr");
-  const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
 
-  let url =
+  const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
     process.env.SUPABASE_URL ||
-    process.env.PUBLIC_SUPABASE_URL!;
+    process.env.PUBLIC_SUPABASE_URL;
 
-  let key =
+  const supabaseKey =
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_ANON_KEY!;
+    process.env.SUPABASE_ANON_KEY;
 
-  return createServerClient(url, key, {
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Missing Supabase ENV in production or local environment");
+  }
+
+  return createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

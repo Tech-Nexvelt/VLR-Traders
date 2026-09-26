@@ -1,5 +1,6 @@
 // ============================================================
 // VLR Traders — Products Data Store (Supabase `website` schema)
+// Single-tenant product management without company_id filter
 // ============================================================
 
 import { getSupabaseServerAdminClient } from "@/lib/supabase/server";
@@ -34,7 +35,7 @@ export function clearProductsCache() {
   productsCache = null;
 }
 
-/** Read products using schema-aware query with multi-tenant company_id filter */
+/** Read products using schema-aware query */
 export async function getAllProducts(includeInactive = false): Promise<Product[]> {
   const now = Date.now();
   if (!includeInactive && productsCache && now - productsCache.timestamp < PRODUCTS_CACHE_TTL) {
@@ -42,19 +43,12 @@ export async function getAllProducts(includeInactive = false): Promise<Product[]
   }
   try {
     const supabase = getSupabaseServerAdminClient();
-    const companyId = process.env.WEBSITE_COMPANY_ID;
 
     // Fetch categories to join name
-    let catQuery = supabase
+    const { data: categoriesData, error: catError } = await supabase
       .schema("website")
       .from("categories")
       .select("id, name");
-
-    if (companyId) {
-      catQuery = catQuery.eq("company_id", companyId);
-    }
-
-    const { data: categoriesData, error: catError } = await catQuery;
 
     if (catError) {
       console.error("Supabase categories fetch error in getAllProducts:", catError);
@@ -70,10 +64,6 @@ export async function getAllProducts(includeInactive = false): Promise<Product[]
       .schema("website")
       .from("products")
       .select("*");
-
-    if (companyId) {
-      query = query.eq("company_id", companyId);
-    }
 
     if (!includeInactive) {
       query = query.eq("status", "Active");
@@ -101,7 +91,7 @@ export async function getAllProducts(includeInactive = false): Promise<Product[]
         material: row.material ?? undefined,
         finish: row.finish ?? undefined,
         status: (row.status as Product["status"]) || "Active",
-        images, // JSONB array mapped; images[0] is primary image
+        images,
         documents: (row.documents as ProductDocument[]) || [],
         description: row.description || "",
         longDescription: row.long_description || row.longDescription || row.description || "",
@@ -138,7 +128,6 @@ export interface CreateProductInput {
 
 async function findUniqueSlug(baseName: string, excludeId?: string): Promise<string> {
   const supabase = getSupabaseServerAdminClient();
-  const companyId = process.env.WEBSITE_COMPANY_ID;
   const baseSlug = generateSlug(baseName);
   let candidate = baseSlug;
   let counter = 1;
@@ -149,8 +138,6 @@ async function findUniqueSlug(baseName: string, excludeId?: string): Promise<str
       .from("products")
       .select("id")
       .eq("slug", candidate);
-
-    if (companyId) query = query.eq("company_id", companyId);
 
     if (excludeId) {
       query = query.neq("id", excludeId);
@@ -172,17 +159,13 @@ async function findUniqueSlug(baseName: string, excludeId?: string): Promise<str
 async function categoryNameFor(categoryId: string): Promise<string> {
   try {
     const supabase = getSupabaseServerAdminClient();
-    const companyId = process.env.WEBSITE_COMPANY_ID;
 
-    let query = supabase
+    const { data, error } = await supabase
       .schema("website")
       .from("categories")
       .select("name")
-      .eq("id", categoryId);
-
-    if (companyId) query = query.eq("company_id", companyId);
-
-    const { data, error } = await query.limit(1);
+      .eq("id", categoryId)
+      .limit(1);
 
     if (error) {
       console.error("Supabase categoryNameFor error:", error);
@@ -198,7 +181,6 @@ async function categoryNameFor(categoryId: string): Promise<string> {
 /** Add a new product */
 export async function createProduct(input: CreateProductInput): Promise<Product> {
   const supabase = getSupabaseServerAdminClient();
-  const companyId = process.env.WEBSITE_COMPANY_ID;
   const slug = await findUniqueSlug(input.name);
   const id = `prod-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 5)}`;
   const images = input.images && input.images.length > 0 ? input.images : ["/hero_kitchen.jpg"];
@@ -219,10 +201,6 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
     badge: input.badge ?? null,
     featured: input.featured ?? false,
   };
-
-  if (companyId) {
-    payload.company_id = companyId;
-  }
 
   const { data, error } = await supabase
     .schema("website")
@@ -259,25 +237,16 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
   };
 }
 
-/** Update an existing product with company_id multi-tenant filter */
+/** Update an existing product */
 export async function updateProduct(id: string, updates: Partial<CreateProductInput>): Promise<Product | null> {
   const supabase = getSupabaseServerAdminClient();
-  const companyId = process.env.WEBSITE_COMPANY_ID;
 
-  console.log("Company ID:", companyId);
-  console.log("Product ID:", id);
-
-  let fetchQuery = supabase
+  const { data: existingData, error: fetchError } = await supabase
     .schema("website")
     .from("products")
     .select("*")
-    .eq("id", id);
-
-  if (companyId) {
-    fetchQuery = fetchQuery.eq("company_id", companyId);
-  }
-
-  const { data: existingData, error: fetchError } = await fetchQuery.single();
+    .eq("id", id)
+    .single();
 
   if (fetchError || !existingData) {
     if (fetchError) console.error("Error fetching existing product:", fetchError);
@@ -304,17 +273,13 @@ export async function updateProduct(id: string, updates: Partial<CreateProductIn
   if (updates.badge !== undefined) payload.badge = updates.badge || null;
   if (updates.featured !== undefined) payload.featured = updates.featured;
 
-  let updateQuery = supabase
+  const { data, error } = await supabase
     .schema("website")
     .from("products")
     .update(payload)
-    .eq("id", id);
-
-  if (companyId) {
-    updateQuery = updateQuery.eq("company_id", companyId);
-  }
-
-  const { data, error } = await updateQuery.select("*").single();
+    .eq("id", id)
+    .select("*")
+    .single();
 
   if (error) {
     console.error("Error updating product:", error);
@@ -344,26 +309,16 @@ export async function updateProduct(id: string, updates: Partial<CreateProductIn
   };
 }
 
-/** Delete a product with company_id multi-tenant filter */
+/** Delete a product */
 export async function deleteProduct(id: string): Promise<boolean> {
   try {
     const supabase = getSupabaseServerAdminClient();
-    const companyId = process.env.WEBSITE_COMPANY_ID;
 
-    console.log("Company ID:", companyId);
-    console.log("Product ID:", id);
-
-    let query = supabase
+    const { error } = await supabase
       .schema("website")
       .from("products")
       .delete()
       .eq("id", id);
-
-    if (companyId) {
-      query = query.eq("company_id", companyId);
-    }
-
-    const { error } = await query;
 
     if (error) {
       console.error("Error deleting product:", error);
@@ -377,20 +332,15 @@ export async function deleteProduct(id: string): Promise<boolean> {
   }
 }
 
-/** Get single product by slug or id (with company_id filter & status = 'Active') */
+/** Get single product by slug or id */
 export async function getProductBySlugOrId(identifier: string): Promise<Product | null> {
   try {
     const supabase = getSupabaseServerAdminClient();
-    const companyId = process.env.WEBSITE_COMPANY_ID;
 
-    let catQuery = supabase
+    const { data: categoriesData, error: catError } = await supabase
       .schema("website")
       .from("categories")
       .select("id, name");
-
-    if (companyId) catQuery = catQuery.eq("company_id", companyId);
-
-    const { data: categoriesData, error: catError } = await catQuery;
 
     if (catError) console.error("Supabase categories error in getProductBySlugOrId:", catError);
 
@@ -399,16 +349,13 @@ export async function getProductBySlugOrId(identifier: string): Promise<Product 
       categoryMap.set(c.id, c.name);
     });
 
-    let query = supabase
+    const { data, error } = await supabase
       .schema("website")
       .from("products")
       .select("*")
       .or(`slug.eq.${identifier},id.eq.${identifier}`)
-      .eq("status", "Active");
-
-    if (companyId) query = query.eq("company_id", companyId);
-
-    const { data, error } = await query.limit(1);
+      .eq("status", "Active")
+      .limit(1);
 
     if (error) {
       console.error("Supabase getProductBySlugOrId error:", error);
@@ -435,7 +382,7 @@ export async function getProductBySlugOrId(identifier: string): Promise<Product 
       images,
       documents: (row.documents as ProductDocument[]) || [],
       description: row.description || "",
-      longDescription: row.long_description || row.longDescription || row.description || "",
+      longDescription: row.long_description || row.description || "",
       badge: (row.badge as Product["badge"]) ?? undefined,
       featured: Boolean(row.featured),
       createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
