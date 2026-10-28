@@ -13,7 +13,16 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "VLR Traders — Plywood, Hardware & Locks",
   description:
-    "Quality plywood & boards, hardware, and locks from trusted brands like Century, Hettich, and Godrej. Affordable pricing, strong service support — VLR Traders.",
+    "Quality plywood & boards, hardware, and locks from trusted brands like Century, Hettich, and Godrej. Affordable pricing, strong service support — VLR Traders, Siddipet.",
+  keywords: [
+    "plywood dealers Siddipet",
+    "plywood suppliers Telangana",
+    "hardware supplier Siddipet",
+    "Century plywood",
+    "Hettich hardware",
+    "Godrej locks",
+    "VLR Traders",
+  ],
 };
 
 // ── Data ──────────────────────────────────────────────────────

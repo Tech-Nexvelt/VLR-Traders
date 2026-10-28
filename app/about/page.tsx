@@ -10,6 +10,12 @@ export const metadata: Metadata = {
   title: `About Us — Trusted Interior Material Partner | ${siteConfig.name}`,
   description:
     "Learn about VLR Traders — our commitment to quality plywood, hardware, and locks for contractors, builders, and interior designers.",
+  keywords: [
+    "VLR Traders Siddipet",
+    "plywood supplier Telangana",
+    "interior materials partner",
+    "trusted hardware distributor",
+  ],
 };
 
 export default function AboutPage() {

@@ -16,6 +16,12 @@ export const metadata: Metadata = {
     url: `${siteConfig.url}/projects`,
     siteName: siteConfig.name,
   },
+  keywords: [
+    "modular kitchen projects Hyderabad",
+    "interior installations Siddipet",
+    "VLR Traders completed projects",
+    "plywood interior work",
+  ],
 };
 
 export default async function ProjectsPage() {

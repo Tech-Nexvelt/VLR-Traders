@@ -8,6 +8,12 @@ export const metadata: Metadata = {
   title: `Contact Us — Get a Custom Quote | ${siteConfig.name}`,
   description:
     "Have a project in mind? Contact VLR Traders for expert guidance, product catalogues, and instant WhatsApp quote support.",
+  keywords: [
+    "VLR Traders contact",
+    "plywood dealer Siddipet contact",
+    "hardware supplier enquiry",
+    "get a quote plywood hardware",
+  ],
 };
 
 export default function ContactPage() {
