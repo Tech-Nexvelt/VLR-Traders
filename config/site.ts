@@ -19,7 +19,7 @@ export const siteConfig = {
   whatsapp: "+919618560405",
   whatsappDisplay: "+91 96185 60405",
   email: "info@vlrtraders.com",
-  address: "VLR Traders, Hyderabad, Telangana, India",
+  address: "VLR Traders, 18-16-126/1/1A Housing Board TO, Ensanpally Rd, Siddipet, Telangana 502103",
 
   // ── WhatsApp prefilled message ────────────────────────────
   whatsappDefaultMessage:
