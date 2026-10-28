@@ -21,6 +21,10 @@ export const metadata: Metadata = {
     "Century plywood",
     "Hettich hardware",
     "Godrej locks",
+    "interior design materials Siddipet",
+    "modular kitchen design",
+    "wardrobe design",
+    "home interiors",
     "VLR Traders",
   ],
 };

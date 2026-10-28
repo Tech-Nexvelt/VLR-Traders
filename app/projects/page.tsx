@@ -21,6 +21,10 @@ export const metadata: Metadata = {
     "interior installations Siddipet",
     "VLR Traders completed projects",
     "plywood interior work",
+    "interior design projects",
+    "residential interior design",
+    "commercial interior fit-out",
+    "custom modular furniture projects",
   ],
 };
 

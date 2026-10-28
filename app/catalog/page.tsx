@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     "Century plywood price",
     "Hettich hardware price",
     "Godrej locks price",
+    "interior design materials",
+    "modular wardrobe materials",
+    "false ceiling materials",
+    "wall paneling",
     "VLR Traders Siddipet",
   ],
 };

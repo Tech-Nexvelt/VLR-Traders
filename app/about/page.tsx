@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     "plywood supplier Telangana",
     "interior materials partner",
     "trusted hardware distributor",
+    "interior design supplier",
+    "interior contractor partner",
+    "turnkey interior solutions",
   ],
 };
 
